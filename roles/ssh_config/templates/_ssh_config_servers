@@ -1,0 +1,7 @@
+{% for host in lookup('env','SSH_HOSTS').split(',') %}
+Host server{{ '%02d' % loop.index|int }}
+  HostName {{ host }}
+  User {{ lookup('env', 'SSH_USER') }}
+  Port {{ lookup('env', 'SSH_PORT') }}
+  IdentityFile {{ lookup('env', 'SSH_PATH') }}/{{ lookup('env', 'SSH_KEY') }}
+{% endfor %}

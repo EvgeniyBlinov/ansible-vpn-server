@@ -1,0 +1,22 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+- name: Builder | Get builder home path
+  shell: 'eval "echo ~$(whoami)"'
+  args:
+    executable: /bin/bash
+  register: ssh_config__r_ansible_user_home
+
+- set_fact:
+    ansible_user_home: "{{ ssh_config__r_ansible_user_home.stdout }}"
+
+- name: Ensure user .ssh directory exists
+  file:
+    path: "{{ ansible_user_home }}/.ssh"
+    state: directory
+    mode: 0700
+
+- name: Add servers to ssh config
+  blockinfile:
+    dest: "{{ ansible_user_home }}/.ssh/config"
+    block: "{{ lookup('template', '_ssh_config_servers') }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK FOR ssh config"

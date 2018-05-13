@@ -1,0 +1,22 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: Test | Dump hosts.yml
+      #debug: msg="{{ lookup('template', '{{ inventory_dir }}/hosts.yml') }}"
+      debug: var=ansible_hosts
+
+- name: Install python to servers
+  hosts: servers
+  become: true
+  gather_facts: no
+  tasks:
+    - raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+- hosts: servers
+  gather_facts: False
+  tasks:
+    - shell: hostname
+      register: test__r_hostname
+    - debug: var=test__r_hostname.stdout

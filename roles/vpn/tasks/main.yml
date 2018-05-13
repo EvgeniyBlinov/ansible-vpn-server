@@ -1,0 +1,52 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2
+---
+#- name: Basic | Docker installation
+  #apt:
+    #name: "{{ item }}"
+    #state: present
+  #with_items:
+    #- openvpn
+########################################################################
+- name: VPN | Ensure vpn directory exists
+  file:
+    path: "{{ vpn__path }}"
+    state: directory
+    recurse: yes
+
+  ##@TODO blinov 2018-05-13: refactor to ansible git module
+- name: VPN | Clone dockvpn
+  shell: >
+    [ -d "{{ vpn__path}}/dockvpn" ] ||
+    cd {{ vpn__path }} &&
+    git clone https://github.com/EvgeniyBlinov/dockvpn.git dockvpn &&
+    cd dockvpn &&
+    git checkout blinov
+  args:
+    executable: /bin/bash
+    creates: "{{ vpn__path }}/dockvpn"
+
+- name: Build image and with buildargs
+  docker_image:
+     path: "{{ vpn__path }}/dockvpn"
+     name: cent/openvpn
+
+- name: VPN | Run VPN container
+  docker_container:
+    name: cent_openvpn
+    image: cent/openvpn
+    devices:
+      - /dev/net/tun
+    command: run
+    state: started
+    capabilities:
+      - NET_ADMIN
+    ports:
+      - "{{ vpn__port }}:{{ vpn__port }}/udp"
+    volumes:
+      - "{{ vpn__path }}/dockvpn/etc/openvpn:/etc/openvpn"
+
+- name: VPN | Fetch client config
+  fetch:
+    src: "{{ vpn__path }}/dockvpn/etc/openvpn/client.ovpn"
+    dest: "{{ generator__path }}/client.ovpn"
+    flat: yes

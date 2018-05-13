@@ -1,0 +1,17 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - include_vars: "{{ item }}"
+      with_first_found:
+        - files:
+          - "secrets/{{ deployment_instance_id }}.yml"
+          - "{{ inventory_dir }}/.secrets/{{ deployment_instance_id }}.yml"
+          skip: true
+
+- hosts: localhost
+  gather_facts: False
+  roles:
+    - ssh_config
+    - generator

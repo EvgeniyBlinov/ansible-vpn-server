@@ -1,0 +1,6 @@
+/tmp
+.certs/
+.env
+envs/**/.*
+envs/**/host_vars/*
+envs/**/.secrets

@@ -1,0 +1,30 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2
+---
+- name: Basic | Update APT caches
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: Basic | Docker installation
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker.io
+    - python-pip
+    - git
+    - tmux
+    - htop
+    - vim
+
+- shell: >
+    git clone https://github.com/EvgeniyBlinov/vim ~/.vim &&
+    ln -s ~/.vim/.vimrc.dist ~/.vimrc &&
+    ln -s ~/.vim/.tmux.conf ~/.tmux.conf
+  args:
+    executable: /bin/bash
+    creates: ~/.vimrc
+
+- name: Basic | install pip requirements
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - docker-py
