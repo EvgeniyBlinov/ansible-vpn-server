@@ -1,0 +1,54 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+- name: Proxy | Ensure proxy directories are exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+  with_items:
+    - "{{ proxy__path }}"
+    - "{{ proxy__config_path }}"
+    - "{{ proxy__html_path }}"
+
+- name: Proxy | Generate config
+  template:
+    src: nginx.conf
+    dest: "{{ proxy__config_path }}/nginx.conf"
+
+- htpasswd:
+    path: "{{ proxy__config_path }}/htpasswd"
+    name: "{{ lookup('env', 'APP_ADMIN__LOGIN') }}"
+    password: "{{ lookup('env', 'APP_ADMIN__PASSWORD') }}"
+    #owner: root
+    #group: www-data
+    mode: 0644
+
+- name: Proxy | Generate admin page
+  template:
+    src: admin.index.html
+    dest: "{{ proxy__html_path }}/index.html"
+    force: yes
+
+- name: Proxy | Run proxy container
+  docker_container:
+    name: nginx_proxy
+    image: nginx:latest
+    state: started
+    restart_policy: always
+    network_mode: host
+    #ports:
+      #- "80:80"
+      #- "443:443"
+      #- "4000:4000"
+      #- "5000:5000"
+    volumes:
+      - "{{ proxy__config_path }}/nginx.conf:/etc/nginx/nginx.conf"
+      - "{{ proxy__config_path }}/htpasswd:/etc/nginx/htpasswd"
+      - "{{ proxy__html_path }}:/etc/nginx/html"
+
+  ########################################################################
+- name: Proxy | Setup user proxy
+  include: _user.yml
+  with_dict: "{{ server_resources.users }}"
+  loop_control:
+    loop_var: "_user"

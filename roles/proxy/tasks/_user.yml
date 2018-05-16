@@ -1,0 +1,21 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+- set_fact:
+    username: "{{ _user.key }}"
+    user: "{{ _user.value }}"
+
+- name: "Proxy | User proxy nginx for {{ username }}"
+  template:
+    src: user.nginx.conf
+    dest: "{{ proxy__config_path }}/{{ username }}.nginx.conf"
+
+- name: "Proxy | Run user nginx container for {{ username }}"
+  docker_container:
+    name: "{{ username }}_nginx"
+    image: nginx:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ user.resources.entry_point_port }}:{{ user.resources.entry_point_port }}"
+    volumes:
+      - "{{ proxy__config_path }}/{{ username }}.nginx.conf:/etc/nginx/nginx.conf"
