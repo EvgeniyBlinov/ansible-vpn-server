@@ -1,0 +1,38 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+- name: Vault | Ensure vault directories are exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+  with_items:
+      - "{{ vault__path }}"
+      - "{{ vault__config_path }}"
+      - "{{ vault__file_path }}"
+      - "{{ vault__logs_path }}"
+
+- name: Vault | Generate vault config
+  template:
+    src: vault.json
+    dest: "{{ vault__config_path }}/vault.json"
+    force: yes
+
+- name: Vault | Run vault container
+  docker_container:
+    name: vault
+    image: vault:{{ vault__version }}
+    state: started
+    restart_policy: always
+    entrypoint: vault server -config=/vault/config/
+    capabilities:
+      - IPC_LOCK
+    ports:
+      - "{{ vault__port }}:{{ vault__port }}"
+    volumes:
+      - "{{ vault__logs_path }}:/vault/logs"
+      - "{{ vault__file_path }}:/vault/file"
+      - "{{ vault__config_path }}:/vault/config"
+    env:
+      VAULT_ADDR: "http://127.0.0.1:{{ vault__version }}"
+      VIRTUAL_HOST: "vault.{{ server_resources.server_name_suffix }}"
+      HTTPS_METHOD: "nohttp"

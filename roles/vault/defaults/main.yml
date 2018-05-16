@@ -1,0 +1,12 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+vault__path: "/opt/vault"
+vault__config_path: "/opt/vault/config"
+vault__file_path: "/opt/vault/file"
+vault__logs_path: "/opt/vault/logs"
+
+vault__port: 8200
+vault__version: "0.8.2"
+
+server_resources:
+  server_name_suffix: server
