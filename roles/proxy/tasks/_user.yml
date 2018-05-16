@@ -8,6 +8,8 @@
   template:
     src: user.nginx.conf
     dest: "{{ proxy__config_path }}/{{ username }}.nginx.conf"
+    #@TODO blinov 2018-05-16: add include and force update
+    force: no
 
 - name: "Proxy | Run user nginx container for {{ username }}"
   docker_container:
