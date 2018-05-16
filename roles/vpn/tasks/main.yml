@@ -25,7 +25,8 @@
     executable: /bin/bash
     creates: "{{ vpn__path }}/dockvpn"
 
-- name: Build image and with buildargs
+  ##@TODO blinov 2018-05-14: Error connecting: load_config() got an unexpected keyword argument 'config_dict'
+- name: VPN | Build image and with buildargs
   docker_image:
      path: "{{ vpn__path }}/dockvpn"
      name: cent/openvpn
@@ -44,6 +45,12 @@
       - "{{ vpn__port }}:{{ vpn__port }}/udp"
     volumes:
       - "{{ vpn__path }}/dockvpn/etc/openvpn:/etc/openvpn"
+    env:
+      OPENVPN_PORT: "{{ vpn__port }}"
+
+- name: Wait until the config is present before continuing
+  wait_for:
+    path: "{{ vpn__path }}/dockvpn/etc/openvpn/client.ovpn"
 
 - name: VPN | Fetch client config
   fetch:

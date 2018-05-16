@@ -80,3 +80,6 @@ ssh-apply:
 			$(SSH_USER)@$$host \
 			;\
 	done
+
+#pip:
+	#sudo pip install -r requirements.txt
