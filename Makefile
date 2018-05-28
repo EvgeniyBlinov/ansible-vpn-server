@@ -5,7 +5,7 @@ SHELL:=/bin/bash
 DEBUG ?= 0
 
 # Fake targets
-.PHONY: ssh ssh-config ssh-apply
+.PHONY: ssh ssh-config ssh-apply deploy
 
 CURRENT_DIR := $(shell dirname "$(realpath "$(lastword $(MAKEFILE_LIST))")")
 ########################################################################

@@ -41,3 +41,8 @@
     - docker-compose
     - passlib
 
+########################################################################
+- name: Basic | Ensure users are exists
+  user:
+    name: "{{ item.key }}"
+  with_dict: "{{ server_resources.users }}"
