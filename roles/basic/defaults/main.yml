@@ -1,0 +1,11 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+server_resources:
+  server_name_suffix: server
+  users:
+    admin:
+      resources:
+        entry_point__server_name: "admin.server"
+        entry_point_port: 3000
+        ports:
+          - "3000-3999"
