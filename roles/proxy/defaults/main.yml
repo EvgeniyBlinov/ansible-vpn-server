@@ -3,6 +3,7 @@
 proxy__path: /opt/proxy
 proxy__config_path: /opt/proxy/etc/nginx
 proxy__html_path: /opt/proxy/etc/nginx/html
+proxy__logs: /opt/proxy/logs
 
 server_resources:
   server_name_suffix: server
