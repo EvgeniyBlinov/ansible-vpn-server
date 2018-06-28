@@ -7,8 +7,10 @@
   <pre>
     Ресурсы:
       Порты:
-        blinov 4000-4999
-        alex   5000-5999
+      {% for user,r in server_resources.users.iteritems() %}
+        {{ user }} {{ r.resources.ports | join(',') }}
+      {% endfor %}
+
   </pre>
 </body>
 </html>
