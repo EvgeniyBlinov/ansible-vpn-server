@@ -54,6 +54,7 @@ all: .env ssh
 ssh: \
 	$(SSH_PATH) \
 	$(SSH_PATH)/$(SSH_KEY) \
+	$(SSH_PATH)/config \
 	ssh-config \
 	ssh-apply
 
@@ -62,6 +63,10 @@ $(SSH_PATH):
 
 $(SSH_PATH)/$(SSH_KEY):
 	ssh-keygen -f $@
+
+
+$(SSH_PATH)/config:
+	touch $@
 
 ssh-config:
 	bin/run.sh bin/build.yml
