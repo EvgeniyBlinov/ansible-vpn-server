@@ -52,8 +52,8 @@
   wait_for:
     path: "{{ vpn__path }}/dockvpn/etc/openvpn/client.ovpn"
 
-- name: VPN | Fetch client config
-  fetch:
-    src: "{{ vpn__path }}/dockvpn/etc/openvpn/client.ovpn"
-    dest: "{{ generator__path }}/client.ovpn"
-    flat: yes
+- name: VPN | Fetch VPN files
+  synchronize:
+    mode: pull
+    src: "{{ vpn__path }}/dockvpn/etc/openvpn/"
+    dest: "{{ generator__path }}"
