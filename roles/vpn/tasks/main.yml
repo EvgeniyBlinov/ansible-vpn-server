@@ -39,6 +39,7 @@
       - /dev/net/tun
     command: run
     state: started
+    restart_policy: always
     capabilities:
       - NET_ADMIN
     ports:
