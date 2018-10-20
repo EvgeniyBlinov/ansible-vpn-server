@@ -4,3 +4,4 @@
 envs/**/.*
 envs/**/host_vars/*
 envs/**/.secrets
+/.python
