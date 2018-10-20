@@ -3,28 +3,36 @@
 - hosts: localhost
   gather_facts: False
   tasks:
-    - include_vars: "{{ item }}"
-      with_first_found:
-        - files:
-          - "secrets/{{ deployment_instance_id }}.yml"
-          - "{{ inventory_dir }}/.secrets/{{ deployment_instance_id }}.yml"
-          skip: true
+    - name: Get public IP
+      ipify_facts:
 
-- name: Install python to servers
-  hosts: servers
-  become: true
-  gather_facts: no
-  tasks:
-    - raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
 
 - hosts: localhost
-  roles:
-    - generator
+  gather_facts: False
+  tasks:
+    - debug: var=ipify_public_ip
+    #- include_vars: "{{ item }}"
+      #with_first_found:
+        #- files:
+          #- "secrets/{{ deployment_instance_id }}.yml"
+          #- "{{ inventory_dir }}/.secrets/{{ deployment_instance_id }}.yml"
+          #skip: true
 
-- hosts: servers
-  roles:
-    - basic
-    - vpn
-    - proxy
-    - yandex-disk
-    #- vault
+#- name: Install python to servers
+  #hosts: servers
+  #become: true
+  #gather_facts: no
+  #tasks:
+    #- raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+#- hosts: localhost
+  #roles:
+    #- generator
+
+#- hosts: servers
+  #roles:
+    #- basic
+    #- vpn
+    #- proxy
+    #- yandex-disk
+    ##- vault
