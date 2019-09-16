@@ -1,0 +1,60 @@
+#  vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
+---
+- name: Gitolite | Create user
+  user:
+    name: "{{ gitolite__user }}"
+    system: yes
+    shell: /bin/bash
+    comment: 'git version control'
+    group: "{{ gitolite__group }}"
+    home: "{{ gitolite__home }}"
+
+- name: Gitolite | Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: "{{ gitolite__user }}"
+    group: "{{ gitolite__group }}"
+  with_items:
+    - "{{ gitolite__home }}"
+    - "{{ gitolite__home }}/bin"
+
+########################################################################
+#add key to /home/git/gitolite.pub | chown git:git
+########################################################################
+
+- name: Gitolite | Install git
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+
+
+- block:
+  - name: Gitolite | Clone gitolite
+    git:
+      repo: "{{ gitolite__repo }}"
+      dest: "{{ gitolite__home }}/gitolite"
+      clone: yes
+
+  - name: Gitolite | Install gitolite
+    shell: >
+      {{ gitolite__home }}/gitolite/install \
+        -to {{ gitolite__home }}/bin
+    args:
+      executable: /bin/bash
+      chdir: "{{ gitolite__home }}"
+
+    ##@TODO blinov 2018-05-15: fix it
+  #- name: Gitolite | Install gitolite
+    #shell: >
+      #{{ gitolite__home }}/bin/gitolite \
+        #setup -pk gitolite.pub
+    #args:
+      #executable: /bin/bash
+      #chdir: "{{ gitolite__home }}"
+
+  become: yes
+  become_user: "{{ gitolite__user }}"
